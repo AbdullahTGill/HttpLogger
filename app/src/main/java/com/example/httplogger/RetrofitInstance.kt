@@ -1,26 +1,27 @@
 package com.example.httplogger
 
+import NetworkViewModel
 import android.content.Context
-import kotlinx.coroutines.flow.MutableStateFlow
+import android.util.Log
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+fun RetrofitInstance(context: Context, viewModel: NetworkViewModel): Retrofit {
+    val loggingInterceptor = HttpLoggingInterceptor().apply {
+        level = HttpLoggingInterceptor.Level.BODY
+    }
 
-val responseInfoFlow = MutableStateFlow<List<ResponseInfo>>(emptyList())
+    val requestInterceptor = Interceptor { chain ->
+        val request = chain.request()
+        val requestInfo = extractRequestInfo(request)
+        viewModel.addRequestInfo(requestInfo)
 
-
-
-fun RetrofitInstance(context: Context, ): Retrofit {
-    val loggingInterceptor = HttpLoggingInterceptor()
-    loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
-
-//    private val interceptor: HttpLoggingInterceptor = HttpLoggingInterceptor().apply {
-//        level = HttpLoggingInterceptor.Level.BODY
-//    }
-
+        chain.proceed(request)
+    }
 
     val responseCodeInterceptor = Interceptor { chain ->
         val request = chain.request()
@@ -28,12 +29,12 @@ fun RetrofitInstance(context: Context, ): Retrofit {
         val response = chain.proceed(request)
         val endNs = System.nanoTime()
 
+        val rootDomain = getRootDomain(request.url)
         val responseCode = response.code
-        val url = request.url.toString()
+        val url = rootDomain
         val date = java.util.Date().toString()
         val responseTimeMs = (endNs - startNs) / 1_000_000
-        val endpoint = request.url.encodedPath
-
+        val endpoint = "${request.method}/${request.url.encodedPath}"
 
         val responseInfo = ResponseInfo(
             code = responseCode,
@@ -45,15 +46,15 @@ fun RetrofitInstance(context: Context, ): Retrofit {
 
         println("Response Info: $responseInfo")
 
-        val currentInfos = responseInfoFlow.value.toMutableList()
-        currentInfos.add(responseInfo)
-        responseInfoFlow.value = currentInfos
+        // Add the response info to the ViewModel's flow
+        viewModel.addResponseInfo(responseInfo)
 
         response
     }
+
     val client = OkHttpClient.Builder()
         .addInterceptor(loggingInterceptor)
-        //.addInterceptor(customLoggingInterceptor)
+        .addInterceptor(requestInterceptor)
         .addInterceptor(responseCodeInterceptor)
         .addInterceptor { chain ->
             val request = chain.request().newBuilder()
@@ -66,8 +67,29 @@ fun RetrofitInstance(context: Context, ): Retrofit {
         .build()
 
     return Retrofit.Builder()
-        .baseUrl("https://jokes-api.proxy-production.allthingsdev.co/") // Replace with your API base URL
+        .baseUrl("https://jokes-api.proxy-production.allthingsdev.co/")
         .client(client)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
+}
+
+fun extractRequestInfo(request: Request): RequestInfo {
+    val headers = request.headers.toMultimap().mapValues { it.value.joinToString(", ") }
+//    val body = request.body?.let { body ->
+//        val buffer = okio.Buffer()
+//        body.writeTo(buffer)
+//        buffer.readUtf8()
+//    }
+    // Debug logging
+    Log.d("RequestInfo", "Headers: $headers")
+    //Log.d("RequestInfo", "Body: $body")
+
+    return RequestInfo(
+        headers = headers,
+       // body = body
+    )
+}
+
+fun getRootDomain(url: okhttp3.HttpUrl): String {
+    return url.host.split(".").takeLast(2).joinToString(".")
 }

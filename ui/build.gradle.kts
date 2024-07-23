@@ -51,7 +51,7 @@ android {
 
 dependencies {
 
-    implementation(project(":app")) // Recommended approach
+    //implementation(project(":app")) // Recommended approach
 
 
     implementation(libs.androidx.core.ktx)

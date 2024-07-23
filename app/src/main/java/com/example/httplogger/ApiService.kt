@@ -1,6 +1,7 @@
+package com.example.httplogger
+
+import NetworkViewModel
 import android.content.Context
-import com.example.httplogger.JokesApi
-import com.example.httplogger.RetrofitInstance
 import retrofit2.Response
 import retrofit2.http.GET
 
@@ -9,9 +10,7 @@ interface ApiService {
     suspend fun getRandomJoke(): Response<JokesApi>
 }
 
-
-fun getApiService(context: Context): ApiService {
-    val retrofit = RetrofitInstance(context)
+fun getApiService(context: Context, viewModel: NetworkViewModel): ApiService {
+    val retrofit = RetrofitInstance(context, viewModel)
     return retrofit.create(ApiService::class.java)
 }
-

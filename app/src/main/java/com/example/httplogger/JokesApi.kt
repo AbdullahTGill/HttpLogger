@@ -13,9 +13,11 @@ data class ResponseInfo(
     val date: String,
     val responseTime: Long,
     val endpoint: String
+)
 
-
-
+data class RequestInfo(
+    val headers: Map<String, String>,
+  //  val body: String?
 )
 
 

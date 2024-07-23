@@ -1,16 +1,14 @@
-package com.example.ui.ui.components
+package com.example.httplogger
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ScrollableTabRow
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabPosition
 import androidx.compose.material3.TabRow
@@ -23,9 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.ui.ui.theme.HttpLoggerTheme
 
 /**
  * A composable function to create a custom tab
@@ -130,11 +126,12 @@ fun CustomIndicator(tabPositions: List<TabPosition>, selectedTabIndex: Int) {
  */
 
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ZindigiTabWithIndicator(
     modifier: Modifier = Modifier,
     tabTitles: List<String>,
-    pagerState: Int,
+    pagerState: PagerState,
     selectedTabIndex: Int,
     onTabSelected: (Int) -> Unit,
     content: @Composable () -> Unit = {}
@@ -160,30 +157,31 @@ fun ZindigiTabWithIndicator(
     content()
 }
 
-@Preview
-@Composable
-fun PreviewZindigiTabWithIndicator() {
-    HttpLoggerTheme {
-        Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color(0xFFF1F8E9)) // Apply background to the preview
-        ) {
-            var selectedTabIndex by remember { mutableStateOf(0) }
-            var PagerState by remember { mutableStateOf(0) }
-
-
-            ZindigiTabWithIndicator(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth(),
-                tabTitles = listOf("Tab 1", "Tab 2", "Tab 3", "Tab 4"),
-                content = {},
-                selectedTabIndex = selectedTabIndex,
-                onTabSelected = {},
-                pagerState = PagerState
-
-            )
-        }
-    }
-}
+//@OptIn(ExperimentalFoundationApi::class)
+//@Preview
+//@Composable
+//fun PreviewZindigiTabWithIndicator() {
+//    HttpLoggerTheme {
+//        Surface(
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .background(Color(0xFFF1F8E9)) // Apply background to the preview
+//        ) {
+//            var selectedTabIndex by remember { mutableStateOf(0) }
+//            var PagerState by remember { mutableStateOf(0) }
+//
+//
+//            ZindigiTabWithIndicator(
+//                modifier = Modifier
+//                    .padding(16.dp)
+//                    .fillMaxWidth(),
+//                tabTitles = listOf("Tab 1", "Tab 2", "Tab 3", "Tab 4"),
+//                content = {},
+//                selectedTabIndex = selectedTabIndex,
+//                onTabSelected = {},
+//                pagerState = PagerState
+//
+//            )
+//        }
+//    }
+//}
