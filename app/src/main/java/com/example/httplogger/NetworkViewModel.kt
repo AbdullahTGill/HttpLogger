@@ -1,5 +1,4 @@
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.httplogger.JokesApi
@@ -11,30 +10,29 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class NetworkViewModel : ViewModel() {
+
+    //state flows
     private val _responseInfoFlow = MutableStateFlow<List<ResponseInfo>>(emptyList())
     val responseInfoFlow: StateFlow<List<ResponseInfo>> = _responseInfoFlow
 
     private val _requestInfoFlow = MutableStateFlow<List<RequestInfo>>(emptyList())
     val requestInfoFlow: StateFlow<List<RequestInfo>> = _requestInfoFlow
 
-    private val _jokeFlow = MutableStateFlow<JokesApi?>(null)
-    val jokeFlow: StateFlow<JokesApi?> = _jokeFlow
+    private val _apiResponseFlow = MutableStateFlow<JokesApi?>(null)
+    val jokeFlow: StateFlow<JokesApi?> = _apiResponseFlow
 
-    fun fetchRandomJoke(context: Context) {
+    fun fetchResponse(context: Context) {
         viewModelScope.launch {
             val apiService = getApiService(context, this@NetworkViewModel)
             try {
                 val response = apiService.getRandomJoke()
                 if (response.isSuccessful) {
                     val joke = response.body()
-                    _jokeFlow.value = joke
-                    Log.d("NetworkViewModel", "Joke: $joke")
+                    _apiResponseFlow.value = joke
                 } else {
-                    Log.e("NetworkViewModel", "Error response: ${response.errorBody()?.string()}")
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                Log.e("NetworkViewModel", "Exception: ${e.message}")
             }
         }
     }

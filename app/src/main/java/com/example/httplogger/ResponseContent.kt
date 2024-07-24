@@ -1,4 +1,3 @@
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -8,18 +7,16 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
-fun JokeDisplay(viewModel: NetworkViewModel = viewModel()) {
+fun ReponseDisplay(viewModel: NetworkViewModel = viewModel()) {
     val context = LocalContext.current
     val joke by viewModel.jokeFlow.collectAsState()
 
-    // Fetch the joke when the composable is first launched
+    // Fetch api response when the composable is first launched
     LaunchedEffect(Unit) {
-        viewModel.fetchRandomJoke(context)
+        viewModel.fetchResponse(context)
     }
 
-    LaunchedEffect(joke) {
-        Log.d("JokeDisplay", "Joke: $joke")
-    }
+
 
     Column(
         modifier = Modifier
@@ -27,11 +24,11 @@ fun JokeDisplay(viewModel: NetworkViewModel = viewModel()) {
             .padding(16.dp)
     ) {
         joke?.let {
-            Text(text = "Setup: ${it.setup}", style = MaterialTheme.typography.bodyLarge)
+            Text(text = "${it.setup}", style = MaterialTheme.typography.bodyLarge)
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "Punchline: ${it.punchline}", style = MaterialTheme.typography.bodyLarge)
+            Text(text = "${it.punchline}", style = MaterialTheme.typography.bodyLarge)
         } ?: run {
-            Text(text = "Loading joke...", style = MaterialTheme.typography.bodyLarge)
+            Text(text = "Loading response...", style = MaterialTheme.typography.bodyLarge)
         }
     }
 }

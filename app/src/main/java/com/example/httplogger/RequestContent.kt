@@ -27,17 +27,8 @@ fun RequestInfoList(viewModel: NetworkViewModel = viewModel()) {
 
 @Composable
 fun RequestInfoItem(requestInfo: RequestInfo) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-      //  elevation = 4.dp
-    ) {
         Column(modifier = Modifier.padding(16.dp)) {
-//            Text(text = "URL: ${requestInfo.url}", style = MaterialTheme.typography.body1)
-//            Text(text = "Method: ${requestInfo.method}", style = MaterialTheme.typography.body1)
             Text(text = "Headers: ${requestInfo.headers}", style = MaterialTheme.typography.bodyMedium)
-           // Text(text = "Body: ${requestInfo.body}", style = MaterialTheme.typography.bodyMedium)
         }
     }
-}
+
